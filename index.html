@@ -26,13 +26,25 @@
         .cm-s-default .cm-number { color: #b5cea8 !important; }
         .cm-s-default .cm-comment { color: #6a9955 !important; font-style: italic; }
 
-        /* [v18 복구] 찾기 하이라이트 6종 */
-        .hl-0 { background: rgba(255, 235, 59, 0.35) !important; outline: 1px solid #ffd700; }
-        .hl-1 { background: rgba(186, 104, 200, 0.35) !important; outline: 1px solid #ba68c8; }
-        .hl-2 { background: rgba(76, 175, 80, 0.35) !important; outline: 1px solid #4caf50; }
-        .hl-3 { background: rgba(255, 87, 34, 0.35) !important; outline: 1px solid #ff5722; }
-        .hl-4 { background: rgba(3, 169, 244, 0.35) !important; outline: 1px solid #03a9f4; }
-        .hl-5 { background: rgba(233, 30, 99, 0.35) !important; outline: 1px solid #e91e63; }
+        /* 찾기 하이라이트 18종 */
+        .hl-0  { background: rgba(255, 235, 59, 0.35)  !important; outline: 1px solid #ffeb3b; }  /* 노랑 */
+        .hl-1  { background: rgba(186, 104, 200, 0.35) !important; outline: 1px solid #ba68c8; }  /* 보라 */
+        .hl-2  { background: rgba(76, 175, 80, 0.35)   !important; outline: 1px solid #4caf50; }  /* 초록 */
+        .hl-3  { background: rgba(255, 87, 34, 0.35)   !important; outline: 1px solid #ff5722; }  /* 주황 */
+        .hl-4  { background: rgba(3, 169, 244, 0.35)   !important; outline: 1px solid #03a9f4; }  /* 파랑 */
+        .hl-5  { background: rgba(233, 30, 99, 0.35)   !important; outline: 1px solid #e91e63; }  /* 핑크 */
+        .hl-6  { background: rgba(0, 188, 212, 0.35)   !important; outline: 1px solid #00bcd4; }  /* 청록 */
+        .hl-7  { background: rgba(244, 67, 54, 0.35)   !important; outline: 1px solid #f44336; }  /* 빨강 */
+        .hl-8  { background: rgba(198, 255, 0, 0.35)   !important; outline: 1px solid #c6ff00; }  /* 라임 */
+        .hl-9  { background: rgba(29, 233, 182, 0.35)  !important; outline: 1px solid #1de9b6; }  /* 민트 */
+        .hl-10 { background: rgba(92, 107, 192, 0.35)  !important; outline: 1px solid #5c6bc0; }  /* 인디고 */
+        .hl-11 { background: rgba(255, 171, 64, 0.35)  !important; outline: 1px solid #ffab40; }  /* 앰버 */
+        .hl-12 { background: rgba(224, 64, 251, 0.35)  !important; outline: 1px solid #e040fb; }  /* 바이올렛 */
+        .hl-13 { background: rgba(255, 112, 67, 0.35)  !important; outline: 1px solid #ff7043; }  /* 코럴 */
+        .hl-14 { background: rgba(64, 196, 255, 0.35)  !important; outline: 1px solid #40c4ff; }  /* 하늘 */
+        .hl-15 { background: rgba(0, 230, 118, 0.35)   !important; outline: 1px solid #00e676; }  /* 연두 */
+        .hl-16 { background: rgba(255, 128, 171, 0.35) !important; outline: 1px solid #ff80ab; }  /* 로즈 */
+        .hl-17 { background: rgba(255, 214, 0, 0.35)   !important; outline: 1px solid #ffd600; }  /* 골드 */
 
         /* 레이아웃 및 탭 스타일 */
         .main-layout { display: flex; flex: 1; height: 100%; }
@@ -100,7 +112,11 @@
 <script>
     const STORAGE_KEY = 'latex_editor_persistent_v1';
     const LEGACY_KEYS = ['latex_editor_global_data', 'latex_editor_v22_final', 'latex_editor_v21_final', 'latex_editor_v20_data', 'latex_editor_global_tabs'];
-    const BATCH_COLORS = ['#ffd700', '#ba68c8', '#4caf50', '#ff5722', '#03a9f4', '#e91e63'];
+    const BATCH_COLORS = [
+        '#ffeb3b', '#ba68c8', '#4caf50', '#ff5722', '#03a9f4', '#e91e63',
+        '#00bcd4', '#f44336', '#c6ff00', '#1de9b6', '#5c6bc0', '#ffab40',
+        '#e040fb', '#ff7043', '#40c4ff', '#00e676', '#ff80ab', '#ffd600'
+    ];
 
     let data = {
         single: { activeId: null, tabs: [] },
@@ -234,7 +250,7 @@
         div.style.display = "flex"; div.style.gap = "4px"; 
         // [v18 복구] 행 추가 시 인덱스에 따른 왼쪽 색상 바 적용
         const idx = document.querySelectorAll('#batch-list .input-pair-row').length;
-        div.style.borderLeft = `4px solid ${BATCH_COLORS[idx % 6]}`;
+        div.style.borderLeft = `4px solid ${BATCH_COLORS[idx % 18]}`;
         
         div.innerHTML = `
             <input type="text" class="b-find" value="${f}" placeholder="찾기" oninput="saveCurrentData(); refreshHighlights();" onpaste="handleExcelPaste(event, 'batch', Array.from(this.parentElement.parentElement.children).indexOf(this.parentElement))">
@@ -263,8 +279,8 @@
         // [v18 복구] 묶음 세트는 인덱스별 hl-0~5 순환 적용
         document.querySelectorAll('#batch-list .input-pair-row').forEach((row, idx) => {
             const bf = row.querySelector('.b-find').value;
-            if (bf) applyHighlight(bf, row.querySelector('.b-regex').checked, `hl-${idx % 6}`);
-            row.style.borderLeft = `4px solid ${BATCH_COLORS[idx % 6]}`;
+            if (bf) applyHighlight(bf, row.querySelector('.b-regex').checked, `hl-${idx % 18}`);
+            row.style.borderLeft = `4px solid ${BATCH_COLORS[idx % 18]}`;
         });
     }
 
