@@ -21,7 +21,10 @@
         .cm-s-default .cm-keyword { color: #4ec9b0 !important; font-weight: bold; } 
         .cm-s-default .cm-variable-2 { color: #9cdcfe !important; } 
         .CodeMirror .CodeMirror-scroll .CodeMirror-code .cm-keyword-custom { color: #dcdcaa !important; font-weight: bold !important; }
-        .CodeMirror .CodeMirror-scroll .CodeMirror-code .cm-hangblock-custom { color: #ff8c42 !important; font-weight: bold !important; }
+        .cm-s-default .cm-hangblock-custom,
+        .cm-s-default .cm-hangblock-custom * { color: #ff8c42 !important; font-weight: bold !important; }
+        .cm-s-default .cm-hblinebreak-custom,
+        .cm-s-default .cm-hblinebreak-custom * { color: #ffc299 !important; font-weight: normal !important; }
         .cm-s-default .cm-tag, .cm-s-default .cm-atom { color: #9cdcfe !important; }
         .cm-s-default .cm-bracket, .cm-s-default .cm-punctuation { color: #ffd700 !important; }
         .cm-s-default .cm-number { color: #b5cea8 !important; }
@@ -273,12 +276,18 @@
             while (cursor.findNext()) editor.markText(cursor.from(), cursor.to(), {className: 'cm-keyword-custom'});
         });
 
-        // hangblock 전용 강조 (\begin{hangblock}, \end{hangblock}, \hblinebreak)
-        const hangblockPatterns = [/\\begin\{hangblock\}/g, /\\end\{hangblock\}/g, /\\hblinebreak/g];
+        // hangblock 전용 강조: \begin{hangblock}[..]{..}{..} 와 \end{hangblock} 는 진한 주황,
+        // \hblinebreak 는 연한 주황으로 구분.
+        const hangblockPatterns = [
+            /\\begin\{hangblock\}(?:\[[^\]]*\])?(?:\{[^}]*\})?(?:\{[^}]*\})?/g,
+            /\\end\{hangblock\}/g
+        ];
         hangblockPatterns.forEach(re => {
             const cursor = editor.getSearchCursor(re);
             while (cursor.findNext()) editor.markText(cursor.from(), cursor.to(), {className: 'cm-hangblock-custom'});
         });
+        const hblinebreakCursor = editor.getSearchCursor(/\\hblinebreak/g);
+        while (hblinebreakCursor.findNext()) editor.markText(hblinebreakCursor.from(), hblinebreakCursor.to(), {className: 'cm-hblinebreak-custom'});
         
         // [v18 복구] 단일 세트는 hl-0 고정
         const sf = document.getElementById('s-find').value;
